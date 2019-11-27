@@ -16,6 +16,7 @@ const cat_create_post = async (req, res) => {
     req.body.owner,
     req.file.filename,
   ];
+
   const response = await catModel.addCat(params);
   await res.json(response);
 };

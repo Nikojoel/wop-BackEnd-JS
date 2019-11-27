@@ -5,6 +5,7 @@ const app = express();
 const port = 3000;
 
 app.use(express.static('uploads'));
+app.use('/thumbnails', express.static('thumbnails'));
 app.use(cors());
 app.use(express.json()); // for parsing application/json
 app.use(express.urlencoded({extended: true})); // for parsing application/x-www-form-urlencoded
