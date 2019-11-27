@@ -13,6 +13,7 @@ const cat_create_post = async (req, res) => {
   await sharp.makeThumbnail(req.file.path, req.file.filename);
   await sharp().resize().png().toFile();
 
+
   const params = [
     req.body.name,
     req.body.age,
