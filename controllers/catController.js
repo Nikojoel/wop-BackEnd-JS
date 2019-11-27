@@ -1,6 +1,8 @@
 'use strict';
 const catModel = require('../models/catModel');
-const sharp = require('../utils/resize');
+const resize = require('../utils/resize.js');
+const imageMeta = require('../utils/imageMeta.js');
+
 
 // const cats = catModel.cats;
 
@@ -10,18 +12,30 @@ const cat_list_get = async (req, res) => {
 };
 
 const cat_create_post = async (req, res) => {
-  await sharp.makeThumbnail(req.file.path, 'thumbnails/' + req.file.filename, {width: 160, height: 160});
 
-  const params = [
-    req.body.name,
-    req.body.age,
-    req.body.weight,
-    req.body.owner,
-    req.file.filename,
-  ];
-
-  const response = await catModel.addCat(params);
-  await res.json(response);
+    try {
+      // make thumbnail
+      await resize.makeThumbnail(req.file.path,'thumbnails/' + req.file.filename, {width: 160, height: 160});
+      // get coordinates
+      const coords = await imageMeta.getCoordinates(req.file.path);
+      console.log('coords', coords);
+      // add to db
+      const params = [
+        req.body.name,
+        req.body.age,
+        req.body.weight,
+        req.body.owner,
+        req.file.filename,
+        coords,
+      ];
+      const cat = await catModel.addCat(params);
+      await res.json(cat);
+      //await res.json(params);
+    }
+    catch (e) {
+      console.log('exif error', e);
+      res.status(400).json({message: 'error'});
+    }
 };
 
 const cat_get = async (req, res) => {
